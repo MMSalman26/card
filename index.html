@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eid Card - AND Gate Concept</title>
+    <style>
+        :root {
+            --primary-color: #11edc8;
+            --secondary-color: #2e7d7c;
+            --accent-color: #ffb300;
+            --text-color: #eceff1;
+            --background-color: #263238;
+            --circuit-color: #186386;
+            --circuit-active: #47c5ff;
+            --input-active: #4769ff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            transition: background-color 0.5s ease;
+        }
+
+        .dark-mode {
+            --primary-color: #004d40;
+            --secondary-color: #2e7d32;
+            --accent-color: #ffb300;
+            --text-color: #eceff1;
+            --background-color: #263238;
+            --circuit-color: #546e7a;
+            --circuit-active: #00838f;
+            --input-active: #388e3c;
+        }
+
+        .pattern-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 10px 10px, transparent 8px, rgba(128, 128, 128, 0.05) 8px, transparent 10px);
+            background-size: 30px 30px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .card-container {
+            width: 90%;
+            max-width: 800px;
+            background-color: rgba(38, 50, 56, 0.9);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            z-index: 2;
+        }
+
+        .dark-mode .card-container {
+            background-color: rgba(38, 50, 56, 0.9);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .inputs-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            text-align: center;
+            margin: 0 10px 20px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--circuit-color);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--input-active);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .input-label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .circuit-container {
+            position: relative;
+            height: 200px;
+            margin: 20px auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .circuit {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .circuit-line {
+            position: absolute;
+            background-color: var(--circuit-color);
+            transition: background-color 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .circuit-line.active {
+            background-color: var(--circuit-active);
+            box-shadow: 0 0 10px var(--circuit-active);
+        }
+
+        .horizontal-line {
+            height: 5px;
+        }
+
+        .vertical-line {
+            width: 5px;
+        }
+
+        .input-line-1 {
+            top: 50px;
+            left: 20%;
+            width: 15%;
+        }
+
+        .input-line-2 {
+            top: 150px;
+            left: 20%;
+            width: 15%;
+        }
+
+        .middle-line-1 {
+            top: 50px;
+            height: 105px;
+            left: 35%;
+        }
+
+        .middle-line-2 {
+            top: 100px;
+            left: 35%;
+            width: 15%;
+        }
+
+        .gate-circle {
+            position: absolute;
+            left: 46%;
+            top: 85px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--circuit-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .gate-circle.active {
+            background-color: var(--circuit-active);
+            box-shadow: 0 0 10px var(--circuit-active);
+        }
+
+        .gate-circle:after {
+            content: "AND";
+            font-size: 8px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .output-line {
+            top: 100px;
+            left: 50%;
+            width: 30%;
+        }
+
+        .label {
+            position: absolute;
+            font-size: 0.8rem;
+            color: var(--text-color);
+        }
+
+        .input-label-1 {
+            top: 30px;
+            left: 20%;
+        }
+
+        .input-label-2 {
+            top: 130px;
+            left: 20%;
+        }
+
+        .output-label {
+            top: 80px;
+            left: 80%;
+        }
+
+        .moon {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: transparent;
+            box-shadow: 10px 10px 0 0 var(--accent-color);
+            transform: rotate(-45deg);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .moon.visible {
+            opacity: 1;
+            animation: moonGlow 3s infinite alternate;
+        }
+
+        @keyframes moonGlow {
+            0% {
+                box-shadow: 10px 10px 0 0 var(--accent-color);
+            }
+            100% {
+                box-shadow: 10px 10px 0 0 var(--accent-color), 0 0 20px var(--accent-color);
+            }
+        }
+
+        .message-container {
+            text-align: center;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            margin-top: 30px;
+        }
+
+        .eid-message {
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 1s ease, transform 1s ease;
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .eid-message.visible {
+            opacity: 1;
+            transform: scale(1);
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            0% {
+                text-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+            }
+            100% {
+                text-shadow: 0 0 20px rgba(76, 175, 80, 0.8), 0 0 30px rgba(0, 150, 136, 0.6);
+            }
+        }
+
+        .fullscreen-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .fullscreen-animation.active {
+            display: flex;
+            opacity: 0;
+            animation-name: fadeIn;
+            animation-duration: 15s;
+            animation-delay: 1s;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            2% { opacity: 1; }
+            100% { opacity: 1; }
+        }
+
+        .fullscreen-message {
+            font-size: 5rem;
+            font-weight: bold;
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: pulseScale 2s infinite alternate;
+            text-shadow: 0 0 20px var(--primary-color), 0 0 40px var(--secondary-color);
+        }
+
+        @keyframes pulseScale {
+            0% {
+                transform: scale(1);
+                text-shadow: 0 0 20px var(--primary-color), 0 0 40px var(--secondary-color);
+            }
+            100% {
+                transform: scale(1.1);
+                text-shadow: 0 0 30px var(--primary-color), 0 0 60px var(--secondary-color), 0 0 90px var(--accent-color);
+            }
+        }
+
+        .close-animation {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: 2px solid white;
+            color: white;
+            font-size: 1rem;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-animation:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            animation: explode 1s forwards;
+            opacity: 0;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(0.1);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: particleMove 1.5s forwards;
+        }
+
+        @keyframes particleMove {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+
+        
+
+        @keyframes crescentMove {
+            0% { transform: rotate(-45deg) translate(-50vw, 20vh); }
+            50% { transform: rotate(-45deg) translate(50vw, -20vh); }
+            100% { transform: rotate(-45deg) translate(-50vw, 20vh); }
+        }
+
+        .islamic-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: 200px 200px;
+            background-image: 
+                radial-gradient(circle at 50px 50px, var(--secondary-color) 2px, transparent 2px),
+                radial-gradient(circle at 150px 50px, var(--secondary-color) 2px, transparent 2px),
+                radial-gradient(circle at 100px 100px, var(--secondary-color) 2px, transparent 2px),
+                radial-gradient(circle at 50px 150px, var(--secondary-color) 2px, transparent 2px),
+                radial-gradient(circle at 150px 150px, var(--secondary-color) 2px, transparent 2px);
+            opacity: 0.1;
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .card-container {
+                padding: 20px;
+                width: 95%;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .input-group {
+                min-width: 150px;
+            }
+            
+            .circuit-container {
+                height: 180px;
+            }
+            
+            .eid-message {
+                font-size: 2.5rem;
+            }
+            
+            .fullscreen-message {
+                font-size: 3rem;
+                padding: 0 20px;
+            }
+            
+            .theme-toggle {
+                font-size: 1.3rem;
+            }
+
+            .moon {
+                width: 40px;
+                height: 40px;
+                top: 17px;
+                right: 17px;
+            }
+            
+            .gate-circle {
+                left: 44%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .card-container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.2rem;
+            }
+            
+            .input-group {
+                min-width: 120px;
+            }
+            
+            .circuit-container {
+                height: 150px;
+            }
+            
+            .input-label {
+                font-size: 0.8rem;
+            }
+            
+            .label {
+                font-size: 0.7rem;
+            }
+            
+            .eid-message {
+                font-size: 2rem;
+            }
+
+            .theme-toggle {
+                font-size: 1.2rem;
+            }
+
+            .moon {
+                width: 35px;
+                height: 35px;
+                top: 15px;
+                right: 15px;
+            }
+            
+            .fullscreen-message {
+                font-size: 2.5rem;
+            }
+            
+            .gate-circle {
+                width: 25px;
+                height: 25px;
+                top: 88px;
+            }
+            
+            .gate-circle:after {
+                font-size: 7px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="pattern-overlay"></div>
+    <div class="card-container">
+        <header>
+            <h1>Eid Card</h1>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+        </header>
+        
+        <div class="inputs-container">
+            <div class="input-group">
+                <label class="switch">
+                    <input type="checkbox" id="ramadanInput">
+                    <span class="slider"></span>
+                </label>
+                <span class="input-label">Completion of Ramadan</span>
+            </div>
+            
+            <div class="input-group">
+                <label class="switch">
+                    <input type="checkbox" id="moonInput">
+                    <span class="slider"></span>
+                </label>
+                <span class="input-label">Moon Sighting</span>
+            </div>
+        </div>
+        
+        <div class="circuit-container">
+            <div class="circuit">
+                <div class="circuit-line horizontal-line input-line-1" id="inputLine1"></div>
+                <div class="circuit-line horizontal-line input-line-2" id="inputLine2"></div>
+                <div class="circuit-line vertical-line middle-line-1" id="middleLine1"></div>
+                <div class="circuit-line horizontal-line middle-line-2" id="middleLine2"></div>
+                <div class="gate-circle" id="gateCircle"></div>
+                <div class="circuit-line horizontal-line output-line" id="outputLine"></div>
+                
+                <div class="label input-label-1">Input 1</div>
+                <div class="label input-label-2">Input 2</div>
+                <div class="label output-label">Output</div>
+            </div>
+        </div>
+        
+        <div class="moon" id="moonIcon"></div>
+        
+        <div class="message-container">
+            <div class="eid-message" id="eidMessage">Eid Mubarak</div>
+        </div>
+    </div>
+    
+    <div class="fullscreen-animation" id="fullscreenAnimation">
+        <div class="islamic-pattern"></div>
+        <div class="crescent"></div>
+        <div class="fullscreen-message">Enjoy Your Eid Day!!</div>
+        <button class="close-animation" id="closeAnimation">Close</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get elements
+            const themeToggle = document.getElementById('themeToggle');
+            const ramadanInput = document.getElementById('ramadanInput');
+            const moonInput = document.getElementById('moonInput');
+            const inputLine1 = document.getElementById('inputLine1');
+            const inputLine2 = document.getElementById('inputLine2');
+            const middleLine1 = document.getElementById('middleLine1');
+            const middleLine2 = document.getElementById('middleLine2');
+            const gateCircle = document.getElementById('gateCircle');
+            const outputLine = document.getElementById('outputLine');
+            const eidMessage = document.getElementById('eidMessage');
+            const moonIcon = document.getElementById('moonIcon');
+            const fullscreenAnimation = document.getElementById('fullscreenAnimation');
+            const closeAnimation = document.getElementById('closeAnimation');
+            
+            let previousState = false; // Track previous state of AND gate
+            let animationActive = false; // Track if fullscreen animation is showing
+            
+            // Theme toggle
+            themeToggle.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '❤️';
+            });
+            
+            // Close animation button
+            closeAnimation.addEventListener('click', function() {
+                fullscreenAnimation.classList.remove('active');
+                animationActive = false;
+            });
+            
+            // Add stars to the fullscreen animation
+            function addStars() {
+                for (let i = 0; i < 100; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.animationDelay = `${Math.random() * 2}s`;
+                    fullscreenAnimation.appendChild(star);
+                }
+            }
+            
+            // Create firework explosion
+            function createFireworkExplosion(x, y) {
+                const colors = ['#4caf50', '#00bcd4', '#ffc107', '#e91e63', '#9c27b0', '#ffffff'];
+                
+                for (let i = 0; i < 50; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    // Random angle and distance
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 50 + Math.random() * 100;
+                    const tx = Math.cos(angle) * distance;
+                    const ty = Math.sin(angle) * distance;
+                    
+                    particle.style.setProperty('--tx', `${tx}px`);
+                    particle.style.setProperty('--ty', `${ty}px`);
+                    
+                    // Random color
+                    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.backgroundColor = randomColor;
+                    particle.style.boxShadow = `0 0 6px ${randomColor}`;
+                    
+                    // Position at explosion center
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    
+                    // Randomize animation duration slightly
+                    particle.style.animationDuration = `${1 + Math.random() * 0.5}s`;
+                    
+                    fullscreenAnimation.appendChild(particle);
+                    
+                    // Remove particle after animation completes
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 1500);
+                }
+            }
+            
+            // Continuously create fireworks for the fullscreen animation
+            function startContinuousFireworks() {
+                if (!animationActive) return;
+                
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+                
+                // Create a firework at random position
+                const x = Math.random() * viewportWidth;
+                const y = Math.random() * (viewportHeight * 0.7); // Keep in upper 70% of screen
+                
+                createFireworkExplosion(x, y);
+                
+                // Schedule next firework
+                setTimeout(startContinuousFireworks, 300 + Math.random() * 500);
+            }
+            
+            // Show fullscreen animation
+            function showFullscreenAnimation() {
+                fullscreenAnimation.classList.add('active');
+                animationActive = true;
+                
+                // Add stars if they don't exist yet
+                if (!fullscreenAnimation.querySelector('.star')) {
+                    addStars();
+                }
+                
+                // Start continuous fireworks
+                startContinuousFireworks();
+            }
+            
+            // Logic and animations
+            function updateCircuit() {
+                // Input 1 logic
+                if (ramadanInput.checked) {
+                    inputLine1.classList.add('active');
+                } else {
+                    inputLine1.classList.remove('active');
+                }
+                
+                // Input 2 logic
+                if (moonInput.checked) {
+                    inputLine2.classList.add('active');
+                    moonIcon.classList.add('visible');
+                } else {
+                    inputLine2.classList.remove('active');
+                    moonIcon.classList.remove('visible');
+                }
+                
+                // AND gate logic - current state
+                const currentState = ramadanInput.checked && moonInput.checked;
+                
+                // Update circuit display
+                if (currentState) {
+                    middleLine1.classList.add('active');
+                    middleLine2.classList.add('active');
+                    gateCircle.classList.add('active');
+                    outputLine.classList.add('active');
+                    eidMessage.classList.add('visible');
+                    
+                    // Show fullscreen animation only when state changes from false to true
+                    if (!previousState && !animationActive) {
+                        // Short delay before showing fullscreen animation
+                        setTimeout(showFullscreenAnimation, 800);
+                    }
+                } else {
+                    middleLine1.classList.remove('active');
+                    middleLine2.classList.remove('active');
+                    gateCircle.classList.remove('active');
+                    outputLine.classList.remove('active');
+                    eidMessage.classList.remove('visible');
+                }
+                
+                // Update previous state
+                previousState = currentState;
+            }
+            
+            // Event listeners
+            ramadanInput.addEventListener('change', updateCircuit);
+            moonInput.addEventListener('change', updateCircuit);
+            
+            // Initial update
+            updateCircuit();
+        });
+    </script>
+</body>
+</html>
