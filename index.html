@@ -355,7 +355,7 @@
             display: flex;
             opacity: 0;
             animation-name: fadeIn;
-            animation-duration: 15s;
+            animation-duration: 50s;
             animation-delay: 1s;
         }
 
@@ -482,7 +482,6 @@
             opacity: 0.1;
         }
 
-        /* Mobile responsive adjustments */
         @media (max-width: 768px) {
             .card-container {
                 padding: 20px;
@@ -639,7 +638,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Get elements
             const themeToggle = document.getElementById('themeToggle');
             const ramadanInput = document.getElementById('ramadanInput');
             const moonInput = document.getElementById('moonInput');
@@ -654,22 +652,19 @@
             const fullscreenAnimation = document.getElementById('fullscreenAnimation');
             const closeAnimation = document.getElementById('closeAnimation');
             
-            let previousState = false; // Track previous state of AND gate
-            let animationActive = false; // Track if fullscreen animation is showing
+            let previousState = false; 
+            let animationActive = false; 
             
-            // Theme toggle
             themeToggle.addEventListener('click', function() {
                 document.body.classList.toggle('dark-mode');
                 themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '❤️';
             });
             
-            // Close animation button
             closeAnimation.addEventListener('click', function() {
                 fullscreenAnimation.classList.remove('active');
                 animationActive = false;
             });
             
-            // Add stars to the fullscreen animation
             function addStars() {
                 for (let i = 0; i < 100; i++) {
                     const star = document.createElement('div');
@@ -681,7 +676,6 @@
                 }
             }
             
-            // Create firework explosion
             function createFireworkExplosion(x, y) {
                 const colors = ['#4caf50', '#00bcd4', '#ffc107', '#e91e63', '#9c27b0', '#ffffff'];
                 
@@ -689,7 +683,6 @@
                     const particle = document.createElement('div');
                     particle.className = 'particle';
                     
-                    // Random angle and distance
                     const angle = Math.random() * Math.PI * 2;
                     const distance = 50 + Math.random() * 100;
                     const tx = Math.cos(angle) * distance;
@@ -698,68 +691,57 @@
                     particle.style.setProperty('--tx', `${tx}px`);
                     particle.style.setProperty('--ty', `${ty}px`);
                     
-                    // Random color
                     const randomColor = colors[Math.floor(Math.random() * colors.length)];
                     particle.style.backgroundColor = randomColor;
                     particle.style.boxShadow = `0 0 6px ${randomColor}`;
                     
-                    // Position at explosion center
                     particle.style.left = `${x}px`;
                     particle.style.top = `${y}px`;
                     
-                    // Randomize animation duration slightly
                     particle.style.animationDuration = `${1 + Math.random() * 0.5}s`;
                     
                     fullscreenAnimation.appendChild(particle);
                     
-                    // Remove particle after animation completes
                     setTimeout(() => {
                         particle.remove();
                     }, 1500);
                 }
             }
             
-            // Continuously create fireworks for the fullscreen animation
             function startContinuousFireworks() {
                 if (!animationActive) return;
                 
                 const viewportWidth = window.innerWidth;
                 const viewportHeight = window.innerHeight;
                 
-                // Create a firework at random position
                 const x = Math.random() * viewportWidth;
-                const y = Math.random() * (viewportHeight * 0.7); // Keep in upper 70% of screen
+                const y = Math.random() * (viewportHeight * 0.7); 
                 
                 createFireworkExplosion(x, y);
                 
-                // Schedule next firework
                 setTimeout(startContinuousFireworks, 300 + Math.random() * 500);
             }
             
-            // Show fullscreen animation
             function showFullscreenAnimation() {
                 fullscreenAnimation.classList.add('active');
                 animationActive = true;
                 
-                // Add stars if they don't exist yet
                 if (!fullscreenAnimation.querySelector('.star')) {
                     addStars();
                 }
                 
-                // Start continuous fireworks
                 startContinuousFireworks();
             }
             
-            // Logic and animations
             function updateCircuit() {
-                // Input 1 logic
+
                 if (ramadanInput.checked) {
                     inputLine1.classList.add('active');
                 } else {
                     inputLine1.classList.remove('active');
                 }
                 
-                // Input 2 logic
+
                 if (moonInput.checked) {
                     inputLine2.classList.add('active');
                     moonIcon.classList.add('visible');
@@ -768,10 +750,10 @@
                     moonIcon.classList.remove('visible');
                 }
                 
-                // AND gate logic - current state
+
                 const currentState = ramadanInput.checked && moonInput.checked;
                 
-                // Update circuit display
+
                 if (currentState) {
                     middleLine1.classList.add('active');
                     middleLine2.classList.add('active');
@@ -779,9 +761,7 @@
                     outputLine.classList.add('active');
                     eidMessage.classList.add('visible');
                     
-                    // Show fullscreen animation only when state changes from false to true
                     if (!previousState && !animationActive) {
-                        // Short delay before showing fullscreen animation
                         setTimeout(showFullscreenAnimation, 800);
                     }
                 } else {
@@ -792,15 +772,12 @@
                     eidMessage.classList.remove('visible');
                 }
                 
-                // Update previous state
                 previousState = currentState;
             }
             
-            // Event listeners
             ramadanInput.addEventListener('change', updateCircuit);
             moonInput.addEventListener('change', updateCircuit);
             
-            // Initial update
             updateCircuit();
         });
     </script>
